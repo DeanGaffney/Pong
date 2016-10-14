@@ -92,6 +92,7 @@ int draw_scene(void) {
 
 	// ball
 	for(int ball = 0; ball < ballCount;ball++){
+		if(!balls[ball].isActive)continue;		//dont draw destroyed ball
    	 	glPushMatrix();
         		glTranslatef(balls[ball].x - BALL_SIZE/2, balls[ball].y  - BALL_SIZE/2, 0);
         		draw_ball();

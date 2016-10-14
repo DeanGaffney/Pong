@@ -80,6 +80,7 @@ const int POWER_UP_SIZE	= 5;
 //ball struct
 struct Ball{
 	float x,y,angle;
+	bool isActive;
 };
 const int BALL_MAX_COUNT = 5;
 extern Ball balls[BALL_MAX_COUNT];
@@ -91,9 +92,9 @@ extern float paddle_speed;
 
 extern int game_quit;					// flag - true for user want to quit game
 extern int auto_mode;					// flag - true for computer playing
-extern int score;					// number bounces off paddle
-extern int lives;					// number of balls left to play			
-extern std::string powerUps[5];				// power up array of size 5
+extern int score;						// number bounces off paddle
+extern int lives;						// number of balls left to play			
+extern std::string powerUps[5];			// power up array of size 5
 
 // frame information
 extern double this_time, old_time, dt, start_time;
@@ -120,9 +121,9 @@ int draw_scene(void);						// draw scene by calling draw_* functions
 void draw_status(void);						// draw status message
 void drawRectangle(float x1,float y1, float x2, float y2);    //draws rectangle
 void setColor(float R, float G, float B); 			//accepts RGB floats each from 0-255
-float clamp(float value,float max, float min);			//clamps values
-void get_input(void);						// keyboard/mouse/pad input
-void spawnBall(float x,float y,float angle);			//spawns a ball with values.
-void destroyBall(int index);					//destroys ball at specified index
+float clamp(float value,float max, float min);		//clamps values
+void get_input(void);								// keyboard/mouse/pad input
+void spawnBall(float x,float y,float angle);		//spawns a ball with values.
+void destroyBall(int index);									//destroys ball at specified index
 
 #endif

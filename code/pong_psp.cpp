@@ -224,12 +224,6 @@ int draw_scene(void) {
 	sceGuSwapBuffers();
 }
 
-void setColor(float R,float G, float B){
-	unsigned int rgb = R;
-	rgb = (rgb << 8) + G;
-	rgb = (rgb << 8) + B;
-	sceGuColor(rgb);
-}
 
 void get_input(void) {
 	
