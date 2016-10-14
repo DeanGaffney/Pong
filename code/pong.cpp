@@ -158,7 +158,7 @@ void update() {
 		if (balls[ballNumber].x >= ball_x_max) {
 			if(fabs(balls[ballNumber].y-paddle_y_pos) <= (paddleLength+BALL_SIZE)/2) {
 				score++;
-				paddleLength = clamp(paddleLength-5,PADDLE_MIN_LEN,PADDLE_MAX_LEN);
+				paddleLength = clamp(paddleLength-5,PADDLE_MAX_LEN,PADDLE_MIN_LEN);
 				balls[ballNumber].angle = M_PI - balls[ballNumber].angle;
 			} else {
 				if(ballCount == 1 && lives < 1){			// this means only one ball is left so lose a life
