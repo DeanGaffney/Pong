@@ -82,7 +82,7 @@ struct Ball{
 	float x,y,angle;
 };
 const int BALL_MAX_COUNT = 5;
-extern Ball balls[BALL_MAX_COUNT];
+Ball balls[BALL_MAX_COUNT];
 extern int ballCount;
 
 extern float paddle_x_pos;

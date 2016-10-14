@@ -45,9 +45,9 @@ float clamp(float value,float max,float min){
 void start_life() {
 	
 	// initial ball position and direction
-	balls[0].x      = WINDOW_WIDTH/2;
-    	balls[0].y     = WINDOW_HEIGHT/2;
-	balls[0].angle = 0.961; /* some arbitrary value -- could use rand() */
+	ball[0].x      = WINDOW_WIDTH/2;
+    	ball[0].y     = WINDOW_HEIGHT/2;
+	ball[0].angle = 0.961; /* some arbitrary value -- could use rand() */
 	
 	// initial paddle position
 	paddle_x_pos    = WINDOW_WIDTH - PADDLE_WIDTH/2;
@@ -92,9 +92,9 @@ void update() {
 	
 	// automatically update paddle direction (if required)
 	if (auto_mode) {
-		if (paddle_y_pos-paddleLength/2>balls[0].y) {
+		if (paddle_y_pos-paddleLength/2>ball[0].y) {
 			paddle_speed = -1;
-		} else if (paddle_y_pos+paddleLength/2<balls[0].y) {
+		} else if (paddle_y_pos+paddleLength/2<ball[0].y) {
 			paddle_speed = 1;
 		}
 	}
@@ -114,8 +114,8 @@ void update() {
 	}
 		
 	// update ball position (centre)
-	balls[0].x += BALL_STEP*cos(balls[0].angle);
-	balls[0].y += BALL_STEP*sin(balls[0].angle);
+	ball[0].x += BALL_STEP*cos(ball[0].angle);
+	ball[0].y += BALL_STEP*sin(ball[0].angle);
 	
 	// calculate limits for ball movement 
 	const float ball_y_min = BALL_SIZE/2 + MARGIN_SIZE + BORDER_SIZE;
@@ -124,21 +124,21 @@ void update() {
 	const float ball_x_max = WINDOW_WIDTH - PADDLE_WIDTH - BALL_SIZE/2;
 	
     	// check - ball hit top or bottom wall
- 	if ((balls[0].y <= ball_y_min || balls[0].y >= ball_y_max)) {
-        	balls[0].angle = -balls[0].angle;
+ 	if ((ball[0].y <= ball_y_min || ball[0].y >= ball_y_max)) {
+        	ball[0].angle = -ball[0].angle;
     	} 
 
 	// check - ball hit left wall
-	if  (balls[0].x <= ball_x_min) {
-		balls[0].angle = M_PI - balls[0].angle;
+	if  (ball[0].x <= ball_x_min) {
+		ball[0].angle = M_PI - ball[0].angle;
 	}
 	
 	// check - ball hits paddle or misses
-	if (balls[0].x >= ball_x_max) {
-		if(fabs(balls[0].y-paddle_y_pos) <= (paddleLength+BALL_SIZE)/2) {
+	if (ball[0].x >= ball_x_max) {
+		if(fabs(ball[0].y-paddle_y_pos) <= (paddleLength+BALL_SIZE)/2) {
 			score++;
 			paddleLength = clamp(paddleLength-5,PADDLE_MIN_LEN,PADDLE_MAX_LEN);
-			balls[0].angle = M_PI - balls[0].angle;
+			ball[0].angle = M_PI - ball[0].angle;
 		} else {
 			lives--;
 			start_life();
