@@ -27,9 +27,9 @@ float paddleLength;
 int game_quit = 0;						// flag - true for user want to quit game
 int score = 0;							// number bounces off paddle
 int lives = 3;							// number of balls left to play						
-int auto_mode = 1;						// flag - true for computer playing
+int auto_mode = 0;						// flag - true for computer playing
 										
-std::string powerUps[5] = {"","","","",""}; //max of five powerups at any one time
+std::string powerUps[5] = {"","","","",""}; 			//max of five powerups at any one time
 
 // frame information
 double this_time, old_time, dt, start_time;
@@ -44,10 +44,13 @@ float clamp(float value,float max,float min){
 
 void start_life() {
 	
+	//set ball count
+	ballCount = 1;
+
 	// initial ball position and direction
-	balls[0].x      = WINDOW_WIDTH/2;
-    	balls[0].y     = WINDOW_HEIGHT/2;
-	balls[0].angle = 0.961; /* some arbitrary value -- could use rand() */
+	balls[ballCount - 1].x      = WINDOW_WIDTH/2;
+    	balls[ballCount - 1].y     = WINDOW_HEIGHT/2;
+	balls[ballCount - 1].angle = 0.961; /* some arbitrary value -- could use rand() */
 	
 	// initial paddle position
 	paddle_x_pos    = WINDOW_WIDTH - PADDLE_WIDTH/2;
@@ -60,8 +63,6 @@ void start_life() {
 	//reset power up array
 	resetPowerUps(powerUps);
 	
-	//set ball count
-	ballCount = 1;
 }
 
 
@@ -78,23 +79,37 @@ bool calculateChance(const int& chance){
 
 void triggerReward(){
 	//1 in 15 to spawn a powerup
-	if(calculateChance(15)){
+	if(calculateChance(5)){
 		//put powerup into a vector or add to array (would need to limit power up array then)
-	}else if(calculateChance(10)){
+		spawnBall(balls[ballCount].x,balls[ballCount].y,balls[ballCount].angle);
+	}else if(calculateChance(2)){
 		//spawn a trap (vector or limited array for amount of traps)
+		spawnBall(balls[ballCount].x,balls[ballCount].y,balls[ballCount].angle);
 	}else{
 		//if no power up or trap spawned give player extra points
 		score += 2;
 	}
 }
 
+void spawnBall(float x,float y,float angle){
+	ballCount++;			//increment ball count
+	balls[ballCount].x = x;		//set new ball fields
+	balls[ballCount].y = y;
+	balls[ballCount].angle = angle;
+}
+
+void destroyBall(int index){
+	if(index == 0)start_life();	//if the ball is the original ball then we ran 
+	ballCount--;
+}
+
 void update() {
 	
 	// automatically update paddle direction (if required)
 	if (auto_mode) {
-		if (paddle_y_pos-paddleLength/2>balls[0].y) {
+		if (paddle_y_pos-paddleLength/2>balls[ballCount].y) {
 			paddle_speed = -1;
-		} else if (paddle_y_pos+paddleLength/2<balls[0].y) {
+		} else if (paddle_y_pos+paddleLength/2<balls[ballCount].y) {
 			paddle_speed = 1;
 		}
 	}
@@ -112,43 +127,45 @@ void update() {
 	} else if (paddle_y_pos>paddle_y_max) {
 		paddle_y_pos = paddle_y_max;
 	}
+	
+	for(int ballNumber = 0; ballNumber < BALL_MAX_COUNT;ballNumber++){
+		// update ball position (centre)
+		balls[ballNumber].x += BALL_STEP*cos(balls[ballNumber].angle);
+		balls[ballNumber].y += BALL_STEP*sin(balls[ballNumber].angle);
 		
-	// update ball position (centre)
-	balls[0].x += BALL_STEP*cos(balls[0].angle);
-	balls[0].y += BALL_STEP*sin(balls[0].angle);
-	
-	// calculate limits for ball movement 
-	const float ball_y_min = BALL_SIZE/2 + MARGIN_SIZE + BORDER_SIZE;
-	const float ball_y_max = WINDOW_HEIGHT - BALL_SIZE/2 - BORDER_SIZE;
-	const float ball_x_min = BORDER_SIZE + BALL_SIZE/2;
-	const float ball_x_max = WINDOW_WIDTH - PADDLE_WIDTH - BALL_SIZE/2;
-	
-    	// check - ball hit top or bottom wall
- 	if ((balls[0].y <= ball_y_min || balls[0].y >= ball_y_max)) {
-        	balls[0].angle = -balls[0].angle;
-    	} 
+		// calculate limits for ball movement 
+		const float ball_y_min = BALL_SIZE/2 + MARGIN_SIZE + BORDER_SIZE;
+		const float ball_y_max = WINDOW_HEIGHT - BALL_SIZE/2 - BORDER_SIZE;
+		const float ball_x_min = BORDER_SIZE + BALL_SIZE/2;
+		const float ball_x_max = WINDOW_WIDTH - PADDLE_WIDTH - BALL_SIZE/2;
+		
+	    	// check - ball hit top or bottom wall
+	 	if ((balls[ballNumber].y <= ball_y_min || balls[ballNumber].y >= ball_y_max)) {
+	        	balls[ballNumber].angle = -balls[ballNumber].angle;
+	    	} 
 
-	// check - ball hit left wall
-	if  (balls[0].x <= ball_x_min) {
-		balls[0].angle = M_PI - balls[0].angle;
-	}
-	
-	// check - ball hits paddle or misses
-	if (balls[0].x >= ball_x_max) {
-		if(fabs(balls[0].y-paddle_y_pos) <= (paddleLength+BALL_SIZE)/2) {
-			score++;
-			paddleLength = clamp(paddleLength-5,PADDLE_MIN_LEN,PADDLE_MAX_LEN);
-			balls[0].angle = M_PI - balls[0].angle;
-		} else {
-			lives--;
-			start_life();
+		// check - ball hit left wall
+		if  (balls[ballNumber].x <= ball_x_min) {
+			balls[ballNumber].angle = M_PI - balls[ballNumber].angle;
 		}
- 	}	
-
+		
+		// check - ball hits paddle or misses
+		if (balls[ballNumber].x >= ball_x_max) {
+			if(fabs(balls[ballNumber].y-paddle_y_pos) <= (paddleLength+BALL_SIZE)/2) {
+				score++;
+				paddleLength = clamp(paddleLength-5,PADDLE_MIN_LEN,PADDLE_MAX_LEN);
+				balls[ballNumber].angle = M_PI - balls[ballNumber].angle;
+			} else {
+				lives--;
+				start_life();
+			}
+	 	}	
+	}
 
  	//trigger something every 5th hit
  	if(score % 5 == 0){
  		triggerReward();
+		printf("Triggered reward\n");
  	}
 }
 

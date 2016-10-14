@@ -116,12 +116,13 @@ void deinit(void);						// release resources
 void draw_walls(void);					
 void draw_ball(void);
 void draw_paddle(void); 
-int draw_scene(void);					// draw scene by calling draw_* functions
-void draw_status(void);					// draw status message
+int draw_scene(void);						// draw scene by calling draw_* functions
+void draw_status(void);						// draw status message
 void drawRectangle(float x1,float y1, float x2, float y2);    //draws rectangle
-void setColor(float R, float G, float B); 		//accepts RGB floats each from 0-255
-float clamp(float value,float max, float min);		//clamps values
-void get_input(void);					// keyboard/mouse/pad input
-
+void setColor(float R, float G, float B); 			//accepts RGB floats each from 0-255
+float clamp(float value,float max, float min);			//clamps values
+void get_input(void);						// keyboard/mouse/pad input
+void spawnBall(float x,float y,float angle);			//spawns a ball with values.
+void destroyBall(int index);					//destroys ball at specified index
 
 #endif
