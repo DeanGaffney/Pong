@@ -90,12 +90,22 @@ int draw_scene(void) {
         draw_paddle();
     glPopMatrix();
 
-	// ball
+	// ball(s)
 	for(int ball = 0; ball < ballCount;ball++){
+		if(!balls[ball].isActive)continue;		//dont draw destroyed ball
    	 	glPushMatrix();
         		glTranslatef(balls[ball].x - BALL_SIZE/2, balls[ball].y  - BALL_SIZE/2, 0);
         		draw_ball();
     		glPopMatrix();
+	}
+
+	//powerUp(s)
+	for(int powerUp = 0; powerUp < powerUpCount;powerUp++){
+		if(!powerUps[powerUp].isActive)continue;
+		glPushMatrix();
+			glTranslatef(powerUps[powerUp].x - POWER_UP_SIZE/2,powerUps[powerUp].y - POWER_UP_SIZE/2,0);
+			draw_powerUp();
+		glPopMatrix();
 	}
 
 	draw_status();								// status message
@@ -111,8 +121,14 @@ int draw_scene(void) {
 }
 
 //(x1,y1) one vertex of shape, (x2,y2) opposite vertex
-void drawRectangle(float x1,float y1, float x2, float y2){
-	glRectf(x1,y1,x2,y2);
+void drawRectangle(float x,float y, float width, float height){
+	glRectf(x,y,width,height);
+}
+
+void draw_powerUp(void){
+	setColor(66,244,203);
+
+	drawRectangle(0,0,POWER_UP_SIZE,POWER_UP_SIZE);
 }
 
 void draw_walls(void) {
@@ -125,6 +141,9 @@ void draw_walls(void) {
     
     //lower wall
     drawRectangle(0,MARGIN_SIZE,WINDOW_WIDTH,MARGIN_SIZE+BORDER_SIZE);
+
+    //left wall
+    drawRectangle(0,BORDER_SIZE,BORDER_SIZE,WINDOW_HEIGHT-BORDER_SIZE);
 }
 
 

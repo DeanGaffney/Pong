@@ -64,7 +64,8 @@
 
 // paddle
 #define PADDLE_WIDTH     BORDER_SIZE
-#define PADDLE_MAX_LEN	 100
+#define PADDLE_MAX_LEN	 150
+#define PADDLE_START_LEN 100
 #define PADDLE_MIN_LEN   30
 extern float paddleLength;				//varies paddle length through gameplay
 
@@ -74,26 +75,38 @@ extern float paddleLength;				//varies paddle length through gameplay
 	#define PADDLE_STEP  dt*520
 #endif
 
-//power up array size
-const int POWER_UP_SIZE	= 5;
-
 //ball struct
 struct Ball{
 	float x,y,angle;
+	bool isActive;
 };
 const int BALL_MAX_COUNT = 5;
 extern Ball balls[BALL_MAX_COUNT];
 extern int ballCount;
 
+//paddle 
 extern float paddle_x_pos;
 extern float paddle_y_pos;
 extern float paddle_speed;
 
+const float POWER_UP_SIZE = 20;
+struct PowerUp{					//used for spawning rewards and traps in game
+	float x,y;
+	bool isActive;
+	std::string powers [4] = {"PADDLE_MAX","PADDLE_MIN","EXTRA_POINTS","DESTROY_BALL"};
+	std::string type;
+};
+//power up array size
+const int POWER_UP_TYPE_MAX_COUNT = 4;
+const int POWER_UP_MAX_COUNT = 5;
+extern PowerUp powerUps[POWER_UP_MAX_COUNT];
+extern int powerUpCount;
+
+
 extern int game_quit;					// flag - true for user want to quit game
 extern int auto_mode;					// flag - true for computer playing
-extern int score;					// number bounces off paddle
-extern int lives;					// number of balls left to play			
-extern std::string powerUps[5];				// power up array of size 5
+extern int score;						// number bounces off paddle
+extern int lives;						// number of balls left to play			
 
 // frame information
 extern double this_time, old_time, dt, start_time;
@@ -113,16 +126,22 @@ void resetPowerUps(std::string []); 	//reset power up array to null
 int init(void);							// initialise graphics system
 void deinit(void);						// release resources
 
+void draw_powerUp(void);					//draws active powerups on screen
 void draw_walls(void);					
 void draw_ball(void);
 void draw_paddle(void); 
 int draw_scene(void);						// draw scene by calling draw_* functions
 void draw_status(void);						// draw status message
-void drawRectangle(float x1,float y1, float x2, float y2);    //draws rectangle
+void drawRectangle(float x,float y, float width, float height);    //draws rectangle
 void setColor(float R, float G, float B); 			//accepts RGB floats each from 0-255
-float clamp(float value,float max, float min);			//clamps values
-void get_input(void);						// keyboard/mouse/pad input
-void spawnBall(float x,float y,float angle);			//spawns a ball with values.
-void destroyBall(int index);					//destroys ball at specified index
+float clamp(float value,float max, float min);		//clamps values
+void get_input(void);								//keyboard/mouse/pad input
+void spawnBall(float x,float y,float angle);		//spawns a ball with values.
+void destroyBall(int index);						//destroys ball at specified index
+void spawnPowerUp(float x,float y);					//spawns a power up
+void destroyPowerUp(int index);						//destroys a power up
+int randomNumber(int min, int max);			// generates random numbers between max and min
+bool checkBallCollisionWithPowerUp(Ball &ball,PowerUp &powerUp);
 
+void activatePowerUp(PowerUp &powerUp);				//applies power up.
 #endif
