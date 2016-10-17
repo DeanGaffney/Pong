@@ -35,7 +35,10 @@
 #include <string.h>     				// for strcpy()
 #include <string>
 #include <math.h>       				// for cos(), sin()
-
+#include <iostream>					//cout debugging
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int.hpp>
+#include <boost/random/variate_generator.hpp>
 // ===============================================
 // Global identifiers
 // ===============================================
@@ -64,10 +67,6 @@
 
 // paddle
 #define PADDLE_WIDTH     BORDER_SIZE
-#define PADDLE_MAX_LEN	 150
-#define PADDLE_START_LEN 100
-#define PADDLE_MIN_LEN   30
-extern float paddleLength;				//varies paddle length through gameplay
 
 #ifdef PSP   		
 	#define PADDLE_STEP  10    			// distance paddle travels per time step
@@ -75,25 +74,28 @@ extern float paddleLength;				//varies paddle length through gameplay
 	#define PADDLE_STEP  dt*520
 #endif
 
+
 //ball struct
 struct Ball{
 	float x,y,angle;
 	bool isActive;
-	//bool isColliding;
 };
 const int BALL_MAX_COUNT = 5;
 extern Ball balls[BALL_MAX_COUNT];
 extern int ballCount;
-//const float COLLISION_TIMER_MAX = 0.3;
 
 //paddle 
 extern float paddle_x_pos;
 extern float paddle_y_pos;
 extern float paddle_speed;
+const float PADDLE_MAX_LEN = 150;
+const float PADDLE_START_LEN = 100;
+const float PADDLE_MIN_LEN = 30;
+extern float paddleLength;				//varies paddle length through gameplay
 
 const float POWER_UP_SIZE = 20;
 //have to put array here rather than inside struct possible c++ compiler difference compared to other linux distro
-static std::string powers [4] = {"PADDLE_MAX","PADDLE_MIN","EXTRA_POINTS","DESTROY_BALL"};
+static std::string powers [6] = {"PADDLE_MAX","PADDLE_MIN","EXTRA_POINTS","DESTROY_BALL","BALL_RAND_DIRECTION","BALL_RAND_LOCATION"};
 struct PowerUp{					//used for spawning rewards and traps in game
 	float x,y;
 	bool isActive;
@@ -145,8 +147,7 @@ void spawnPowerUp(float x,float y);					//spawns a power up
 void destroyPowerUp(int index);						//destroys a power up
 int randomNumber(int min, int max);					// generates random numbers between max and min
 bool checkBallCollisionWithPowerUp(Ball &ball,PowerUp &powerUp);	//checks if any of the balls on screen hit a powerup box
-bool checkBallCollisionWithPaddle(Ball &ball);				//checks if any of the balls on screen hit the paddle.
-void activatePowerUp(PowerUp &powerUp);					//applies power up.
-void onBallHitPaddle(int index, const float maxPos);						//called when ball hits the paddle
-void onBallMissPaddle(int index);						//called when a ball misses the paddle and exits the screen.
+void activatePowerUp(PowerUp &powerUp, int index);			//applies power up.
+void onBallHitPaddle(int index, const float maxPos);			//called when ball hits the paddle
+void onBallMissPaddle(int index);					//called when a ball misses the paddle and exits the screen.
 #endif
