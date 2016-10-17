@@ -145,6 +145,7 @@ void spawnPowerUp(float x,float y);					//spawns a power up
 void destroyPowerUp(int index);						//destroys a power up
 int randomNumber(int min, int max);					// generates random numbers between max and min
 bool checkBallCollisionWithPowerUp(Ball &ball,PowerUp &powerUp);	//checks if any of the balls on screen hit a powerup box
+bool checkBallCollisionWithPaddle(Ball &ball);				//checks if any of the balls on screen hit the paddle.
 void activatePowerUp(PowerUp &powerUp);					//applies power up.
 void onBallHitPaddle(int index, const float maxPos);						//called when ball hits the paddle
 void onBallMissPaddle(int index);						//called when a ball misses the paddle and exits the screen.

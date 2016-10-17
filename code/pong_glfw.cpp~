@@ -133,7 +133,7 @@ void draw_powerUp(void){
 
 void draw_walls(void) {
 	
-    //set to red
+//set to red
     setColor(255,0,0);
 
     //top wall
