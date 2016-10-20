@@ -14,7 +14,7 @@
 // ===============================================
 // Global identifiers
 // ===============================================
-boost::mt19937 gen;
+boost::mt19937 gen;		//ASK KIERAN IF I CAN USE BOOST!!
 
 Ball balls[BALL_MAX_COUNT];
 int ballCount;
@@ -34,6 +34,8 @@ int game_quit = 0;						// flag - true for user want to quit game
 int score = 0;							// number bounces off paddle
 int lives = 3;							// number of balls left to play						
 int auto_mode = 1;						// flag - true for computer playing
+int pastScore = 0;
+int requiredScore = 5;						//every 5th hit a reward is triggered.
 										
 
 // frame information
@@ -50,20 +52,23 @@ bool checkBallCollisionWithPowerUp(Ball &ball, PowerUp &powerUp){
 //called when a ball hits the paddle
 void onBallHitPaddle(int index,const float maxPos){
 	score++;
-	paddleLength = clamp(paddleLength-5,PADDLE_MAX_LEN,PADDLE_MIN_LEN);
+	//paddleLength = clamp(paddleLength-5,PADDLE_MAX_LEN,PADDLE_MIN_LEN);		//shortens the paddle every hit
 	balls[index].angle = M_PI - balls[index].angle;
 	balls[index].x = maxPos;
 }
 
 //called when the ball misses the paddle
 void onBallMissPaddle(int index){
-	std::cout << "The ball count is, " << ballCount << std::endl;
-	if(ballCount <= 1 && lives > 0){
-		lives--;
+	if(ballCount == 1 && lives > 0){
 		start_life();
-	}else{
+		lives--;
+	} else if(ballCount == 1 && lives <= 0){
+		lives--;
+	} else{
 		destroyBall(index);
 	}
+				//if ball count is greater than 1 destroy the ball, because there are other balls remaining.
+	std::cout << "The ball count is: " << ballCount << std::endl;
 }
 
 //clamps values of paddles length
@@ -83,14 +88,15 @@ int randomNumber(int min, int max){
 
 void start_life() {
 	
+	printf ("In start life\n");
 	//set ball count
 	ballCount = 1;
 
 	// initial ball position and direction
-	balls[ballCount - 1].x      = WINDOW_WIDTH/2;
+	balls[ballCount - 1].x     = WINDOW_WIDTH/2;
         balls[ballCount - 1].y     = WINDOW_HEIGHT/2;
-	balls[ballCount - 1].angle = 0.961; /* some arbitrary value -- could use rand() */
-	balls[ballCount - 1].isActive = true;
+	balls[ballCount - 1].angle = (float)(rand());//static_cast <float> (rand()) / static_cast <float> (RAND_MAX); /* some arbitrary value -- could use rand() */
+
 
 	// initial paddle position
 	paddle_x_pos    = WINDOW_WIDTH - PADDLE_WIDTH/2;
@@ -99,86 +105,87 @@ void start_life() {
 
 	//set score
 	score = 0;
-
-	//set powerup count
-	powerUpCount = 1;
+	pastScore = 0;
+	requiredScore += pastScore;		//starts at 5
+	
+	powerUpCount = 0;
+	printf ("Leaving In start life\n");
 
 }
 
 //calculates the chance of spawning a reward
 bool calculateChance(const int& chance){
 	const int random = randomNumber(1,chance);
-	return random >= chance / 2;
+	return random % 2 == 0;
 }
 
 //triggers rewards
 void triggerReward(){
-	//1 in 5 to spawn a powerup
-	if(calculateChance(5)){
+	if(calculateChance(16)){
 		//spawn an extra ball
-		spawnBall(WINDOW_WIDTH/2,WINDOW_HEIGHT/2,0.961);
+		spawnBall(WINDOW_WIDTH/2,WINDOW_HEIGHT/2,static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
 		printf("Ball Spawned\n");
-	}else if(calculateChance(3)){
+	}else if(calculateChance(10)){
 		// spawn a power up
 		float x = (float)(randomNumber(BORDER_SIZE * 4, WINDOW_WIDTH - (BORDER_SIZE * 2)));
 		float y = (float)(randomNumber(BORDER_SIZE * 4, WINDOW_HEIGHT - (BORDER_SIZE * 2)));
 		spawnPowerUp(x,y);
 	}else{
-		//if no power up or trap  or ball spawned give player extra points
-		score += 2;
+		score += 2;		//if none of the chances matched then give player extra points
 	}
 }
 
-void spawnBall(float x,float y,float angle){
+//spawns a ball if one is available to be spawned
+void spawnBall(float x,float y,float angle){	
 	if(ballCount + 1 > BALL_MAX_COUNT)return;
+	ballCount++;					//find a ball that isn't active and use that
 
-	ballCount++;						//increment ball count
 	balls[ballCount - 1].x = x;				//set new ball fields
 	balls[ballCount - 1].y = y;
 	balls[ballCount - 1].angle = angle;
-	balls[ballCount - 1].isActive = true;
 }
 
 void destroyBall(int index){
-	balls[index].isActive = false;
-	std::cout << "Ball count before ball destroyed " << ballCount << std::endl;
+	balls[index] = balls[ballCount - 1];
 	ballCount--;
-	std::cout << "Ball count after ball destroyed " << ballCount << std::endl;
 }
 
 void spawnPowerUp(float x, float y){
-	if (powerUpCount + 1 > POWER_UP_MAX_COUNT)return;
-
+	if(powerUpCount + 1 > POWER_UP_MAX_COUNT)return;
+	
 	powerUpCount++;
 	powerUps[powerUpCount - 1].x = x;
 	powerUps[powerUpCount - 1].y = y;
-	powerUps[powerUpCount - 1].isActive = true;
 
-	int randomType = randomNumber(0,POWER_UP_MAX_COUNT);
 
+	int randomType = randomNumber(0,POWER_UP_TYPE_MAX_COUNT);
 	powerUps[powerUpCount - 1].type = powers[randomType];
 }
 
-void destroyPowerUp(int index){
-	powerUps[index].isActive = false;
+void destroyPowerUp(int index){	
+	printf ("start destroyPowerUp %d %d\n", index, powerUpCount);
+	powerUps[index] = powerUps[powerUpCount - 1];
 	powerUpCount--;
+	printf ("end destroyPowerUp %d %d\n", index, powerUpCount);
 }
 
 //deals with applying power ups to the game
 void activatePowerUp(PowerUp &powerUp, int index){
 	if(powerUp.type == "PADDLE_MAX"){paddleLength = PADDLE_MAX_LEN;}
 	else if(powerUp.type == "PADDLE_MIN"){paddleLength = PADDLE_MIN_LEN;}
-	else if(powerUp.type == "EXTRA_POINTS"){score+=10;}
-	else if(powerUp.type == "DESTROY_BALL"){destroyBall(index);}
-	else if(powerUp.type == "BALL_RAND_DIRECTION"){balls[index].angle = rand();}
+	else if(powerUp.type == "BALL_RAND_DIRECTION"){balls[index].angle = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);;}
 	else if(powerUp.type == "BALL_RAND_LOCATION"){
 		balls[index].x = (float)(randomNumber(BORDER_SIZE * 2, WINDOW_WIDTH - (BORDER_SIZE * 2)));
 		balls[index].y = (float)(randomNumber(BORDER_SIZE * 2, WINDOW_HEIGHT - (BORDER_SIZE * 2)));
+	}else if(powerUp.type == "DESTROY_BALL"){	
+		if(ballCount == 1) balls[index].angle = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);;	//dont destroy the only ball on screen, poor game rules.
+		destroyBall(index);
 	}
+	printf("hr\n");
 }
 
 void update() {
-
+	//std::cout << "No. of power ups " << powerUpCount << std::endl;
 	// automatically update paddle direction (if required)
 	if (auto_mode) {
 		if (paddle_y_pos-paddleLength/2>balls[0].y) {
@@ -203,9 +210,6 @@ void update() {
 	}
 	
 	for(int ballNumber = 0; ballNumber < ballCount;ballNumber++){
-		if(balls[ballNumber].isActive)std::cout << "Index of active ball " << ballNumber << std::endl;
-		//skips balls that have been set to inactive because they were destroyed
-		if(!balls[ballNumber].isActive)continue; 
 
 		// update ball position (centre)
 		balls[ballNumber].x += BALL_STEP*cos(balls[ballNumber].angle);
@@ -235,7 +239,7 @@ void update() {
 			if(fabs(balls[ballNumber].y-paddle_y_pos) <= (paddleLength+BALL_SIZE)/2) {
 				onBallHitPaddle(ballNumber,WINDOW_WIDTH - PADDLE_WIDTH - BALL_SIZE - 2);
 			}else{	
-				std::cout << "Ball missed the padle and should be destroyed " << std::endl;
+				std::cout << "Ball missed the paddle and should be destroyed " << std::endl;
 				onBallMissPaddle(ballNumber);
 			}
 	 	}
@@ -245,6 +249,7 @@ void update() {
 			if(checkBallCollisionWithPowerUp(balls[ballNumber],powerUps[powerUp])){
 				printf("Ball hit power up\n");
 				std::cout << "The power ups type is " << powerUps[powerUp].type << std::endl;
+
 				//use power up power
 				activatePowerUp(powerUps[powerUp],ballNumber);
 
@@ -255,11 +260,18 @@ void update() {
 		}	
 	}
 
- 	//trigger something every 5th hit
- 	if(score % 5 == 0 && score != 0){
+ 	//trigger powerup or ball every 5th hit, if it has been 5 hits since last reward
+ 	if(score == pastScore + requiredScore){
+		//set up score here again
+		pastScore = score;
  		triggerReward();
 		printf("Triggered reward\n");
  	}
+
+	if(ballCount == 0){
+		start_life();
+		lives --;
+	}
 }
 
 int main(void) {

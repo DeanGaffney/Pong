@@ -78,13 +78,13 @@
 //ball struct
 struct Ball{
 	float x,y,angle;
-	bool isActive;
 };
 const int BALL_MAX_COUNT = 5;
 extern Ball balls[BALL_MAX_COUNT];
 extern int ballCount;
 
 //paddle 
+extern int powerUpCount;
 extern float paddle_x_pos;
 extern float paddle_y_pos;
 extern float paddle_speed;
@@ -95,14 +95,13 @@ extern float paddleLength;				//varies paddle length through gameplay
 
 const float POWER_UP_SIZE = 20;
 //have to put array here rather than inside struct possible c++ compiler difference compared to other linux distro
-static std::string powers [6] = {"PADDLE_MAX","PADDLE_MIN","EXTRA_POINTS","DESTROY_BALL","BALL_RAND_DIRECTION","BALL_RAND_LOCATION"};
+static std::string powers [5] = {"PADDLE_MAX","PADDLE_MIN","DESTROY_BALL","BALL_RAND_DIRECTION","BALL_RAND_LOCATION"};
 struct PowerUp{					//used for spawning rewards and traps in game
 	float x,y;
-	bool isActive;
 	std::string type;
 };
 //power up array size
-const int POWER_UP_TYPE_MAX_COUNT = 6;			// max num of power up types/effects
+const int POWER_UP_TYPE_MAX_COUNT = 5;			// max num of power up types/effects
 const int POWER_UP_MAX_COUNT = 5;			// max num of powerups in game at one time
 extern PowerUp powerUps[POWER_UP_MAX_COUNT];
 extern int powerUpCount;
@@ -111,6 +110,8 @@ extern int powerUpCount;
 extern int game_quit;					// flag - true for user want to quit game
 extern int auto_mode;					// flag - true for computer playing
 extern int score;					// number bounces off paddle
+extern int pastScore;					// previous score when reward was triggered
+extern int requiredScore;				// the score needed to trigger the next reward
 extern int lives;					// number of balls left to play			
 
 // frame information
