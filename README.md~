@@ -34,7 +34,6 @@
 #### Overview 
 - Player has 3 lives.
 - Game starts with one ball and can have a max of 5 balls at any one time.
-- Ever paddle hit, results in the paddle decreasing in size, the paddle is clamped between a max and min value.
 - Every successful 5th hit triggers a custom calculate function which calculates a chance of spawning a reward,trap, ball or giving the player extra points.
 - If a ball hits a power up it is used and applied to the game and the power up is then removed from the game.
 - When a ball or power up is *'destroyed'* specific counter variables are updated and the appropriate array indexes are swapped to update the game with the correct number of items to draw on screen.

@@ -89,7 +89,7 @@ extern float paddle_x_pos;
 extern float paddle_y_pos;
 extern float paddle_speed;
 const float PADDLE_MAX_LEN = 150;
-const float PADDLE_START_LEN = 350;
+const float PADDLE_START_LEN = 400;
 const float PADDLE_MIN_LEN = 30;
 extern float paddleLength;				//varies paddle length through gameplay
 

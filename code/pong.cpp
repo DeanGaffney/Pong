@@ -14,7 +14,7 @@
 // ===============================================
 // Global identifiers
 // ===============================================
-boost::mt19937 gen;		//ASK KIERAN IF I CAN USE BOOST!!
+boost::mt19937 gen;		
 
 Ball balls[BALL_MAX_COUNT];
 int ballCount;
@@ -52,7 +52,7 @@ bool checkBallCollisionWithPowerUp(Ball &ball, PowerUp &powerUp){
 //called when a ball hits the paddle
 void onBallHitPaddle(int index,const float maxPos){
 	score++;
-	//paddleLength = clamp(paddleLength-5,PADDLE_MAX_LEN,PADDLE_MIN_LEN);		//shortens the paddle every hit
+	paddleLength = clamp(paddleLength-5,PADDLE_MAX_LEN,PADDLE_MIN_LEN);		//shortens the paddle every hit
 	balls[index].angle = M_PI - balls[index].angle;
 	balls[index].x = maxPos;
 }
@@ -67,8 +67,6 @@ void onBallMissPaddle(int index){
 	} else{
 		destroyBall(index);
 	}
-				//if ball count is greater than 1 destroy the ball, because there are other balls remaining.
-	std::cout << "The ball count is: " << ballCount << std::endl;
 }
 
 //clamps values of paddles length
@@ -87,8 +85,6 @@ int randomNumber(int min, int max){
 }
 
 void start_life() {
-	
-	printf ("In start life\n");
 	//set ball count
 	ballCount = 1;
 
@@ -109,7 +105,6 @@ void start_life() {
 	requiredScore += pastScore;		//starts at 5
 	
 	powerUpCount = 0;
-	printf ("Leaving In start life\n");
 
 }
 
@@ -124,7 +119,6 @@ void triggerReward(){
 	if(calculateChance(16)){
 		//spawn an extra ball
 		spawnBall(WINDOW_WIDTH/2,WINDOW_HEIGHT/2,static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
-		printf("Ball Spawned\n");
 	}else if(calculateChance(10)){
 		// spawn a power up
 		float x = (float)(randomNumber(BORDER_SIZE * 4, WINDOW_WIDTH - (BORDER_SIZE * 2)));
@@ -163,10 +157,8 @@ void spawnPowerUp(float x, float y){
 }
 
 void destroyPowerUp(int index){	
-	printf ("start destroyPowerUp %d %d\n", index, powerUpCount);
 	powerUps[index] = powerUps[powerUpCount - 1];
 	powerUpCount--;
-	printf ("end destroyPowerUp %d %d\n", index, powerUpCount);
 }
 
 //deals with applying power ups to the game
@@ -178,14 +170,12 @@ void activatePowerUp(PowerUp &powerUp, int index){
 		balls[index].x = (float)(randomNumber(BORDER_SIZE * 2, WINDOW_WIDTH - (BORDER_SIZE * 2)));
 		balls[index].y = (float)(randomNumber(BORDER_SIZE * 2, WINDOW_HEIGHT - (BORDER_SIZE * 2)));
 	}else if(powerUp.type == "DESTROY_BALL"){	
-		if(ballCount == 1) balls[index].angle = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);;	//dont destroy the only ball on screen, poor game rules.
+		if(ballCount == 1) balls[index].angle = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);	//dont destroy the only ball on screen, poor game logic.
 		destroyBall(index);
 	}
-	printf("hr\n");
 }
 
 void update() {
-	//std::cout << "No. of power ups " << powerUpCount << std::endl;
 	// automatically update paddle direction (if required)
 	if (auto_mode) {
 		if (paddle_y_pos-paddleLength/2>balls[0].y) {
@@ -239,7 +229,6 @@ void update() {
 			if(fabs(balls[ballNumber].y-paddle_y_pos) <= (paddleLength+BALL_SIZE)/2) {
 				onBallHitPaddle(ballNumber,WINDOW_WIDTH - PADDLE_WIDTH - BALL_SIZE - 2);
 			}else{	
-				std::cout << "Ball missed the paddle and should be destroyed " << std::endl;
 				onBallMissPaddle(ballNumber);
 			}
 	 	}
@@ -247,15 +236,11 @@ void update() {
 	 	//check ball collision with powerups
 	 	for(int powerUp = 0; powerUp < powerUpCount;powerUp++){
 			if(checkBallCollisionWithPowerUp(balls[ballNumber],powerUps[powerUp])){
-				printf("Ball hit power up\n");
-				std::cout << "The power ups type is " << powerUps[powerUp].type << std::endl;
-
 				//use power up power
 				activatePowerUp(powerUps[powerUp],ballNumber);
 
 				//destroy the power up then
 				destroyPowerUp(powerUp);
-				printf("PowerUp Destroyed\n");
 			}
 		}	
 	}
@@ -265,7 +250,6 @@ void update() {
 		//set up score here again
 		pastScore = score;
  		triggerReward();
-		printf("Triggered reward\n");
  	}
 
 	if(ballCount == 0){
@@ -275,7 +259,6 @@ void update() {
 }
 
 int main(void) {
-
 	init();							// initial graphics/sound components
 	start_life();						// reset game to starting state
 

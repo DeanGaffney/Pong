@@ -92,7 +92,6 @@ int draw_scene(void) {
 
 	// ball(s)
 	for(int ball = 0; ball < ballCount;ball++){
-		if(!balls[ball].isActive)continue;		//dont draw destroyed ball
    	 	glPushMatrix();
         		glTranslatef(balls[ball].x - BALL_SIZE/2, balls[ball].y  - BALL_SIZE/2, 0);
         		draw_ball();
@@ -101,7 +100,6 @@ int draw_scene(void) {
 
 	//powerUp(s)
 	for(int powerUp = 0; powerUp < powerUpCount;powerUp++){
-		if(!powerUps[powerUp].isActive)continue;
 		glPushMatrix();
 			glTranslatef(powerUps[powerUp].x - POWER_UP_SIZE/2,powerUps[powerUp].y - POWER_UP_SIZE/2,0);
 			draw_powerUp();
