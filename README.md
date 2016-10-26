@@ -8,8 +8,9 @@ __*C++ version of pong using Opengl and PSP development libraries*__
     - Implement setColor function [x]
 
 ##### Pimping:
+-[x]
     - [x] *Multiple balls* 
-      - Every succesive 5th hit triggers a reward           calculation which can either trigger a new ball 
+      - Every succesive 5th hit triggers a reward calculation which can either trigger a new ball 
         to spawn,a power up to spawn or if the required
         calculation is not met the player recieves extra
         points.
