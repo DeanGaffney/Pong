@@ -1,6 +1,7 @@
 // ===============================================
 // @file   pong.h
-// @author kmurphy
+// @author Dean Gaffney
+// @student 20067423
 // @practical pong
 // @brief  Headfile for PSP+GLFW(OpenGL) pong game
 // ===============================================

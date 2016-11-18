@@ -1,6 +1,7 @@
 // ===============================================
 // @file   pong_psp.cpp
-// @author kmurphy
+// @author Dean Gaffney
+// @student 20067423
 // @practical pong
 // @brief  PSP specific code for Pong implementation
 // ===============================================

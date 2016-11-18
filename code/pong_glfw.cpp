@@ -1,6 +1,7 @@
 // ===============================================
 // @file   pong_glfw.cpp
-// @author kmurphy
+// @author Dean Gaffney
+// @student 20067423
 // @practical pong
 // @brief  GLFW (OpenGL) specific code for Pong implementation
 // ===============================================

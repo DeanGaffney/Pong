@@ -163,6 +163,7 @@ void draw_paddle(void)  {
 }
 
 void draw_status(void)  {
+	setColor(0,255,0);
 	// buffer to hold output message
 	static char mess[300];
 

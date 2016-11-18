@@ -52,7 +52,7 @@ bool checkBallCollisionWithPowerUp(Ball &ball, PowerUp &powerUp){
 //called when a ball hits the paddle
 void onBallHitPaddle(int index,const float maxPos){
 	score++;
-	//paddleLength = clamp(paddleLength-5,PADDLE_MAX_LEN,PADDLE_MIN_LEN);		//shortens the paddle every hit
+	paddleLength = clamp(paddleLength-5,PADDLE_MAX_LEN,PADDLE_MIN_LEN);		//shortens the paddle every hit
 	balls[index].angle = M_PI - balls[index].angle;
 	balls[index].x = maxPos;
 }
